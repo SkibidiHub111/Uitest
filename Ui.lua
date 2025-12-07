@@ -760,32 +760,22 @@ function FlurioreLib:MakeGui(GuiConfig)
 	end)
 	DropShadowHolder.Size = UDim2.new(0, 115 + TextLabel.TextBounds.X + 1 + TextLabel1.TextBounds.X, 0, 350)
 	MakeDraggable(Top, DropShadowHolder)
-local ToggleBtn = Instance.new("ImageButton")
-ToggleBtn.Name = "ToggleUI"
-ToggleBtn.Parent = Top
-ToggleBtn.AnchorPoint = Vector2.new(1, 0.5)
-ToggleBtn.Position = UDim2.new(1, -10, 0.5, 0)
-ToggleBtn.Size = UDim2.new(0, 22, 0, 22)
+	local ToggleBtn = Instance.new("ImageButton")
+ToggleBtn.Name = "FloatingToggle"
+ToggleBtn.Parent = CoreGui
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleBtn.BackgroundTransparency = 1
-ToggleBtn.Image = "rbxassetid://113009911551878" 
-ToggleBtn.ZIndex = 999
+ToggleBtn.Image = "rbxassetid://113009911551878"
+ToggleBtn.Active = true
+ToggleBtn.Draggable = true
+ToggleBtn.ZIndex = 999999
 
 local UIVisible = true
 
 ToggleBtn.MouseButton1Click:Connect(function()
     UIVisible = not UIVisible
-
-    for _, v in pairs(DropShadowHolder:GetChildren()) do
-        if v ~= Top then
-            v.Visible = UIVisible
-        end
-    end
-
-    TweenService:Create(
-        ToggleBtn,
-        TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        {Size = UIVisible and UDim2.new(0, 22, 0, 22) or UDim2.new(0, 20, 0, 20)}
-    ):Play()
+    CoreGui:FindFirstChild("HirimiGui").DropShadowHolder.Visible = UIVisible
 end)
 	--// Blur
 	local MoreBlur = Instance.new("Frame");
