@@ -104,6 +104,49 @@ local function MakeDraggable(topbarobject, object)
 	CustomSize(object)
 	CustomPos(topbarobject, object)
 end
+function Library:CreateUIToggleButton(iconId)
+    local ToggleBtn = Instance.new("ImageButton")
+    ToggleBtn.Name = "UIToggleButton"
+    ToggleBtn.Parent = self.Main
+    ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
+    ToggleBtn.Position = UDim2.new(0, 20, 0, 150)
+    ToggleBtn.BackgroundTransparency = 1
+    ToggleBtn.Image = iconId
+
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Thickness = 2
+    UIStroke.Color = Color3.fromRGB(0, 140, 255)
+    UIStroke.Parent = ToggleBtn
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(1, 0)
+    UICorner.Parent = ToggleBtn
+
+    local TS = game:GetService("TweenService")
+    local TI = TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+
+    ToggleBtn.MouseEnter:Connect(function()
+        TS:Create(ToggleBtn, TI, {
+            Size = UDim2.new(0, 52, 0, 52),
+            ImageColor3 = Color3.fromRGB(0, 200, 255)
+        }):Play()
+    end)
+
+    ToggleBtn.MouseLeave:Connect(function()
+        TS:Create(ToggleBtn, TI, {
+            Size = UDim2.new(0, 45, 0, 45),
+            ImageColor3 = Color3.fromRGB(255, 255, 255)
+        }):Play()
+    end)
+
+    local visible = true
+    ToggleBtn.MouseButton1Click:Connect(function()
+        visible = not visible
+        self.Main.Visible = visible
+    end)
+
+    return ToggleBtn
+end
 function CircleClick(Button, X, Y)
 	spawn(function()
 		Button.ClipsDescendants = true
