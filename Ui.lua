@@ -104,49 +104,6 @@ local function MakeDraggable(topbarobject, object)
 	CustomSize(object)
 	CustomPos(topbarobject, object)
 end
-function Library:CreateUIToggleButton(iconId)
-    local ToggleBtn = Instance.new("ImageButton")
-    ToggleBtn.Name = "UIToggleButton"
-    ToggleBtn.Parent = self.Main
-    ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
-    ToggleBtn.Position = UDim2.new(0, 20, 0, 150)
-    ToggleBtn.BackgroundTransparency = 1
-    ToggleBtn.Image = iconId
-
-    local UIStroke = Instance.new("UIStroke")
-    UIStroke.Thickness = 2
-    UIStroke.Color = Color3.fromRGB(0, 140, 255)
-    UIStroke.Parent = ToggleBtn
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(1, 0)
-    UICorner.Parent = ToggleBtn
-
-    local TS = game:GetService("TweenService")
-    local TI = TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-
-    ToggleBtn.MouseEnter:Connect(function()
-        TS:Create(ToggleBtn, TI, {
-            Size = UDim2.new(0, 52, 0, 52),
-            ImageColor3 = Color3.fromRGB(0, 200, 255)
-        }):Play()
-    end)
-
-    ToggleBtn.MouseLeave:Connect(function()
-        TS:Create(ToggleBtn, TI, {
-            Size = UDim2.new(0, 45, 0, 45),
-            ImageColor3 = Color3.fromRGB(255, 255, 255)
-        }):Play()
-    end)
-
-    local visible = true
-    ToggleBtn.MouseButton1Click:Connect(function()
-        visible = not visible
-        self.Main.Visible = visible
-    end)
-
-    return ToggleBtn
-end
 function CircleClick(Button, X, Y)
 	spawn(function()
 		Button.ClipsDescendants = true
@@ -801,24 +758,56 @@ function FlurioreLib:MakeGui(GuiConfig)
 			end
 		end
 	end)
-	DropShadowHolder.Size = UDim2.new(0, 115 + TextLabel.TextBounds.X + 1 + TextLabel1.TextBounds.X, 0, 350)
-	MakeDraggable(Top, DropShadowHolder)
-	local ToggleBtn = Instance.new("ImageButton")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+
+DropShadowHolder.Size = UDim2.new(0, 115 + TextLabel.TextBounds.X + 1 + TextLabel1.TextBounds.X, 0, 350)
+MakeDraggable(Top, DropShadowHolder)
+
+-- Create Toggle Button
+local ToggleBtn = Instance.new("ImageButton")
 ToggleBtn.Name = "FloatingToggle"
 ToggleBtn.Parent = CoreGui
 ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0, 20, 0.5, -25)
 ToggleBtn.BackgroundTransparency = 1
 ToggleBtn.Image = "rbxassetid://113009911551878"
-ToggleBtn.Active = true
-ToggleBtn.Draggable = true
 ToggleBtn.ZIndex = 999999
 
+-- Make Toggle Always Visible
 local UIVisible = true
+local MainUI = CoreGui:FindFirstChild("HirimiGui").DropShadowHolder
 
 ToggleBtn.MouseButton1Click:Connect(function()
     UIVisible = not UIVisible
-    CoreGui:FindFirstChild("HirimiGui").DropShadowHolder.Visible = UIVisible
+    MainUI.Visible = UIVisible
+end)
+
+-- Proper Drag (NO Draggable property)
+local dragging = false
+local dragStart, startPos
+
+ToggleBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = ToggleBtn.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+ToggleBtn.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        ToggleBtn.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
 end)
 	--// Blur
 	local MoreBlur = Instance.new("Frame");
